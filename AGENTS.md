@@ -52,3 +52,12 @@
 - 解析失败时如何区分“简历质量差”和“机器没有读懂”；
 - 规则、语义模型、岗位库和证据解释分别承担什么职责；
 - 当前结果的适用范围和能力边界是什么。
+
+## Cursor Cloud specific instructions
+
+- 使用 Python 3.12，虚拟环境在 `backend/.venv`。安装命令与 CI 一致：`backend/.venv/bin/pip install -r backend/requirements.txt ruff==0.12.1`。
+- 本地开发不要采用 `.env.example` 中的 MySQL 地址。开发库是 SQLite，例如 `DATABASE_URL=sqlite:///绝对路径/data/resume_ai_dev.db`，并设置 `USE_CELERY=false`。测试使用 `DATABASE_URL=sqlite:///:memory:`。
+- 后端在 `backend/` 启动：`.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000`。
+- 前端在 `frontend/` 先执行 `npm ci`，再执行 `npm run dev`。端口由 `FRONTEND_PORT` 决定，默认 `5174`。接口代理目标是 `VITE_API_TARGET`，默认 `http://127.0.0.1:8000`。
+- 验证命令：`backend/.venv/bin/ruff check backend`；`DATABASE_URL=sqlite:///:memory: SESSION_SECRET=ci-test-secret-not-for-production ALLOW_REGISTER=true USE_CELERY=false backend/.venv/bin/pytest backend/tests -q`；在 `frontend/` 执行 `npm run lint` 和 `npm run build`。
+- `DEEPSEEK_API_KEY` 留空时走本地规则分析，不需要外部模型密钥。
